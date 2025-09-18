@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # TechLogistics - Sistema de Gestión de Pedidos y Rastreo de Envíos
 
 ## Descripción
@@ -73,4 +73,4 @@ TechLogistics/
 └── SQL Crear Base de Datos/
     └── SQL Crear Base de Datos.sql
 ```
->>>>>>> 1251f37d64043c0347df3413fb2d68e15c6b8c2f
+
