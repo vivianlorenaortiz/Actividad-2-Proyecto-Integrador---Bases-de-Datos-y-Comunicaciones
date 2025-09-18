@@ -9,10 +9,6 @@ Sistema integral de gestión logística para la empresa TechLogistics S.A., que 
 
 ---
 
-### 🔍 Acerca del Proyecto Integrador
-
-Este proyecto forma parte de la "Actividad 2: Proyecto Integrador - Bases de Datos y Comunicaciones", cuyo objetivo es modernizar la infraestructura tecnológica de TechLogistics S.A. mediante el desarrollo de un sistema de gestión de pedidos y rastreo de envíos.
-
 **Requerimientos principales del proyecto:**
 
 - **Diseño y modelado de la base de datos:**
@@ -34,49 +30,6 @@ Este proyecto forma parte de la "Actividad 2: Proyecto Integrador - Bases de Dat
 
 ---
 
-### 🚀 Características Principales
-
-- **Clientes**: Registro, consulta, actualización y eliminación
-- **Productos**: Inventario, precios y stock
-- **Pedidos**: Creación y seguimiento de múltiples productos
-- **Transportistas**: Asignación a pedidos
-- **Rutas de Envío**: Optimización de entregas
-- **Estados**: Seguimiento del estado de los pedidos en tiempo real
-
----
-
-### 🔧 Tecnologías Utilizadas
-
-- **Base de Datos**: MySQL (v5.7+)
-- **Backend**: Node.js (v14+) + Express
-- **Frontend**: Vue.js 3 (vía CDN)
-- **HTTP Client**: Axios (CDN)
-- **Herramientas**: npm o yarn, servidor local (npx serve)
-
----
-
-### 📊 Modelo de Datos
-
-Entidades principales:
-
-- `Clientes`: Información de contacto
-- `Productos`: Catálogo disponible
-- `Pedidos`: Tabla principal del sistema
-- `Detalles_Pedido`: Productos por pedido
-- `Transportistas`: Encargados de las entregas
-- `Rutas`: Camino de origen a destino
-- `Estados_Envio`: Etapas del proceso logístico
-
-**Relaciones:**
-
-- Clientes (1) → Pedidos (N)
-- Pedidos (1) → Detalles_Pedido (N)
-- Productos (1) → Detalles_Pedido (N)
-- Estados_Envio (1) → Pedidos (N)
-- Transportistas (1) → Pedidos (N)
-- Rutas (1) → Pedidos (N)
-
----
 
 ### 📁 Estructura del Proyecto
 
@@ -177,38 +130,6 @@ Tecnologías utilizadas:
 
 - Vue.js → interfaz reactiva
 - Axios → conexión con la API
-
----
-
-### 🔌 API REST
-
-#### Endpoints:
-
-**Clientes**
-- `GET /api/clientes`
-- `GET /api/clientes/:id`
-- `POST /api/clientes`
-- `PUT /api/clientes/:id`
-- `DELETE /api/clientes/:id`
-
-**Productos**
-- `GET /api/productos`
-- `GET /api/productos/:id`
-- `POST /api/productos`
-- `PUT /api/productos/:id`
-- `DELETE /api/productos/:id`
-
-**Pedidos**
-- `GET /api/pedidos`
-- `GET /api/pedidos/:id`
-- `POST /api/pedidos`
-- `PUT /api/pedidos/:id`
-- `DELETE /api/pedidos/:id`
-
-**Otros**
-- `GET /api/transportistas`
-- `GET /api/rutas`
-- `GET /api/estados-envio`
 
 ---
 
