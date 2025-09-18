@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TechLogistics - Vue App</title>
+   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>TechLogistics - Panel de Gestión</h1>
+    </header>
+
+    <nav class="nav-buttons">
+      <button @click="section = 'clientes'">Clientes</button>
+      <button @click="section = 'productos'">Productos</button>
+      <button @click="section = 'pedidos'">Pedidos</button>
+    </nav>
+
+    <main>
+      <!-- ==================== CLIENTES ==================== -->
+      <section class="section-container" v-if="section === 'clientes'">
+        <h2>Gestión de Clientes</h2>
+
+        <!-- Formulario para crear o editar un cliente -->
+        <div>
+          <h3 v-if="clienteEdit.id_cliente">Editar Cliente</h3>
+          <h3 v-else>Crear Cliente</h3>
+          <div class="form-group">
+            <label>Nombre:</label>
+            <input v-model="clienteEdit.nombre" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Email:</label>
+            <input v-model="clienteEdit.email" type="email" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono:</label>
+            <input v-model="clienteEdit.telefono" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Dirección:</label>
+            <input v-model="clienteEdit.direccion" type="text" />
+          </div>
+
+          <button class="btn btn-success" @click="saveCliente">
+            {{ clienteEdit.id_cliente ? 'Actualizar' : 'Crear' }}
+          </button>
+          <button class="btn" @click="cancelClienteEdit" v-if="clienteEdit.id_cliente">Cancelar</button>
+        </div>
+
+        <!-- Listado de clientes -->
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="c in clientes" :key="c.id_cliente">
+              <td>{{ c.id_cliente }}</td>
+              <td>{{ c.nombre }}</td>
+              <td>{{ c.email }}</td>
+              <td>{{ c.telefono }}</td>
+              <td>{{ c.direccion }}</td>
+              <td>
+                <button class="btn btn-warning" @click="editCliente(c)">Editar</button>
+                <button class="btn btn-danger" @click="deleteCliente(c.id_cliente)">Borrar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </section>
+
+      <!-- ==================== PRODUCTOS ==================== -->
+      <section class="section-container" v-if="section === 'productos'">
+        <h2>Gestión de Productos</h2>
+
+        <!-- Formulario para crear o editar un producto -->
+        <div>
+          <h3 v-if="productoEdit.id_producto">Editar Producto</h3>
+          <h3 v-else>Crear Producto</h3>
+          <div class="form-group">
+            <label>Nombre:</label>
+            <input v-model="productoEdit.nombre" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Descripción:</label>
+            <input v-model="productoEdit.descripcion" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Precio:</label>
+            <input v-model.number="productoEdit.precio" type="number" step="0.01"/>
+          </div>
+          <div class="form-group">
+            <label>Stock:</label>
+            <input v-model.number="productoEdit.stock" type="number" step="1" />
+          </div>
+
+          <button class="btn btn-success" @click="saveProducto">
+            {{ productoEdit.id_producto ? 'Actualizar' : 'Crear' }}
+          </button>
+          <button class="btn" @click="cancelProductoEdit" v-if="productoEdit.id_producto">Cancelar</button>
+        </div>
+
+        <!-- Listado de productos -->
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in productos" :key="p.id_producto">
+              <td>{{ p.id_producto }}</td>
+              <td>{{ p.nombre }}</td>
+              <td>{{ p.descripcion }}</td>
+              <td>{{ p.precio }}</td>
+              <td>{{ p.stock }}</td>
+              <td>
+                <button class="btn btn-warning" @click="editProducto(p)">Editar</button>
+                <button class="btn btn-danger" @click="deleteProducto(p.id_producto)">Borrar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ==================== PEDIDOS ==================== -->
+      <section class="section-container" v-if="section === 'pedidos'">
+        <h2>Gestión de Pedidos</h2>
+
+        <div>
+          <h3>Crear Pedido</h3>
+          <div class="form-group">
+            <label>Cliente:</label>
+            <select v-model="nuevoPedido.id_cliente">
+              <option disabled value="">Seleccione un cliente</option>
+              <option v-for="c in clientes" :key="c.id_cliente" :value="c.id_cliente">
+                {{ c.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Dirección Envío:</label>
+            <input v-model="nuevoPedido.direccion_envio" type="text" />
+          </div>
+
+          <h4>Productos del Pedido</h4>
+          <div v-for="(item, index) in nuevoPedido.productos" :key="index" style="margin-left:20px;">
+            <label>Producto:</label>
+            <select v-model="item.id_producto">
+              <option disabled value="">Seleccione un producto</option>
+              <option v-for="p in productos" :key="p.id_producto" :value="p.id_producto">
+                {{ p.nombre }}
+              </option>
+            </select>
+            <label>Cant:</label>
+            <input v-model.number="item.cantidad" type="number" min="1" style="width: 60px"/>
+          </div>
+          <button class="btn" @click="addProductoToPedido">Agregar Producto</button>
+          <button class="btn btn-success" @click="crearPedido">Crear Pedido</button>
+        </div>
+
+        <hr />
+
+        <!-- Listado de pedidos -->
+        <h3>Listado de Pedidos</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="pedido in pedidos" :key="pedido.id_pedido">
+              <td>{{ pedido.id_pedido }}</td>
+              <td>{{ pedido.nombre_cliente }}</td>
+              <td>{{ pedido.nombre_estado }}</td>
+              <td>{{ pedido.fecha_pedido }}</td>
+              <td>{{ pedido.total }}</td>
+              <td>
+                <button class="btn" @click="verDetallePedido(pedido.id_pedido)">Ver Detalle</button>
+                <button class="btn btn-danger" @click="deletePedido(pedido.id_pedido)">Borrar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Detalle de pedido seleccionado -->
+        <div v-if="pedidoSeleccionado" style="margin-top: 2rem;">
+          <h4>Detalle Pedido #{{ pedidoSeleccionado.id_pedido }}</h4>
+          <p>Cliente: {{ pedidoSeleccionado.nombre_cliente }}</p>
+          <p>Dirección: {{ pedidoSeleccionado.direccion_envio }}</p>
+          <p>Estado: {{ pedidoSeleccionado.nombre_estado }}</p>
+          <p>Transportista: {{ pedidoSeleccionado.nombre_transportista || 'N/A' }}</p>
+          <p>Ruta: 
+            {{ pedidoSeleccionado.origen ? pedidoSeleccionado.origen : 'N/A' }} 
+            - 
+            {{ pedidoSeleccionado.destino ? pedidoSeleccionado.destino : 'N/A' }}
+          </p>
+          <p>Total: {{ pedidoSeleccionado.total }}</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unit.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="d in pedidoSeleccionado.detalles" :key="d.id_detalle">
+                <td>{{ d.nombre_producto }}</td>
+                <td>{{ d.cantidad }}</td>
+                <td>{{ d.precio_unitario }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button @click="cerrarDetallePedido">Cerrar Detalle</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Vue 3 y Axios desde CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Control de la sección visible
+          section: 'clientes', // 'clientes' | 'productos' | 'pedidos'
+          
+          // Listados
+          clientes: [],
+          productos: [],
+          pedidos: [],
+
+          // Objeto para crear/editar cliente
+          clienteEdit: {
+            id_cliente: null,
+            nombre: '',
+            email: '',
+            telefono: '',
+            direccion: ''
+          },
+
+          // Objeto para crear/editar producto
+          productoEdit: {
+            id_producto: null,
+            nombre: '',
+            descripcion: '',
+            precio: 0,
+            stock: 0
+          },
+
+          // Objeto para crear nuevo pedido
+          nuevoPedido: {
+            id_cliente: '',
+            direccion_envio: '',
+            productos: [
+              {
+                id_producto: '',
+                cantidad: 1
+              }
+            ]
+          },
+
+          // Pedido seleccionado para ver detalles
+          pedidoSeleccionado: null,
+
+          // URL base de la API
+          apiUrl: 'http://localhost:3000/api'
+        }
+      },
+      mounted() {
+        // Cargar datos iniciales
+        this.fetchClientes();
+        this.fetchProductos();
+        this.fetchPedidos();
+      },
+      methods: {
+        // ============================== CLIENTES ==============================
+        fetchClientes() {
+          axios.get(`${this.apiUrl}/clientes`)
+            .then(res => {
+              this.clientes = res.data;
+            })
+            .catch(err => console.error(err));
+        },
+        saveCliente() {
+          const { id_cliente, nombre, email, telefono, direccion } = this.clienteEdit;
+          
+          // Validaciones mínimas
+          if (!nombre || !email) {
+            alert('El nombre y email son obligatorios.');
+            return;
+          }
+
+          if (id_cliente) {
+            // Actualizar cliente
+            axios.put(`${this.apiUrl}/clientes/${id_cliente}`, {
+              nombre, email, telefono, direccion
+            })
+            .then(() => {
+              alert('Cliente actualizado correctamente');
+              this.fetchClientes();
+              this.cancelClienteEdit();
+            })
+            .catch(err => console.error(err));
+          } else {
+            // Crear cliente
+            axios.post(`${this.apiUrl}/clientes`, {
+              nombre, email, telefono, direccion
+            })
+            .then(() => {
+              alert('Cliente creado correctamente');
+              this.fetchClientes();
+              this.cancelClienteEdit();
+            })
+            .catch(err => console.error(err));
+          }
+        },
+        editCliente(cliente) {
+          this.clienteEdit = { ...cliente };
+        },
+        cancelClienteEdit() {
+          this.clienteEdit = {
+            id_cliente: null,
+            nombre: '',
+            email: '',
+            telefono: '',
+            direccion: ''
+          };
+        },
+        deleteCliente(id) {
+          if (!confirm('¿Deseas eliminar este cliente?')) return;
+          axios.delete(`${this.apiUrl}/clientes/${id}`)
+            .then(() => {
+              alert('Cliente eliminado');
+              this.fetchClientes();
+            })
+            .catch(err => console.error(err));
+        },
+
+        // ============================== PRODUCTOS ==============================
+        fetchProductos() {
+          axios.get(`${this.apiUrl}/productos`)
+            .then(res => {
+              this.productos = res.data;
+            })
+            .catch(err => console.error(err));
+        },
+        saveProducto() {
+          const { id_producto, nombre, descripcion, precio, stock } = this.productoEdit;
+          console.log(this.productoEdit);
+
+          // Validaciones mínimas
+          if (!nombre || precio == null) {
+            alert('El nombre y el precio son obligatorios.');
+            return;
+          }
+
+          if (id_producto) {
+            // Editar producto
+            axios.put(`${this.apiUrl}/productos/${id_producto}`, {
+              nombre, descripcion, precio, stock
+            })
+            .then(() => {
+              alert('Producto actualizado correctamente');
+              this.fetchProductos();
+              this.cancelProductoEdit();
+            })
+            .catch(err => console.error(err));
+          } else {
+            // Crear producto
+            axios.post(`${this.apiUrl}/productos`, {
+              nombre, descripcion, precio, stock
+            })
+            .then(() => {
+              alert('Producto creado correctamente');
+              this.fetchProductos();
+              this.cancelProductoEdit();
+            })
+            .catch(err => console.error(err));
+          }
+        },
+        editProducto(producto) {
+          this.productoEdit = { ...producto };
+        },
+        cancelProductoEdit() {
+          this.productoEdit = {
+            id_producto: null,
+            nombre: '',
+            descripcion: '',
+            precio: 0,
+            stock: 0
+          };
+        },
+        deleteProducto(id) {
+          if (!confirm('¿Deseas eliminar este producto?')) return;
+          axios.delete(`${this.apiUrl}/productos/${id}`)
+            .then(() => {
+              alert('Producto eliminado');
+              this.fetchProductos();
+            })
+            .catch(err => console.error(err));
+        },
+
+        // ============================== PEDIDOS ==============================
+        fetchPedidos() {
+          axios.get(`${this.apiUrl}/pedidos`)
+            .then(res => {
+              this.pedidos = res.data;
+            })
+            .catch(err => console.error(err));
+        },
+        addProductoToPedido() {
+          this.nuevoPedido.productos.push({
+            id_producto: '',
+            cantidad: 1
+          });
+        },
+        crearPedido() {
+          const { id_cliente, direccion_envio, productos } = this.nuevoPedido;
+
+          if (!id_cliente || productos.length === 0) {
+            alert('Debes seleccionar cliente y al menos un producto.');
+            return;
+          }
+
+          // Limpiamos productos que no tengan id seleccionado
+          const productosValidos = productos.filter(p => p.id_producto);
+
+          if (productosValidos.length === 0) {
+            alert('Por favor selecciona productos válidos.');
+            return;
+          }
+
+          axios.post(`${this.apiUrl}/pedidos`, {
+            id_cliente,
+            direccion_envio,
+            productos: productosValidos
+          })
+          .then(res => {
+            alert('Pedido creado con éxito');
+            this.resetNuevoPedido();
+            this.fetchPedidos();
+          })
+          .catch(err => console.error(err));
+        },
+        resetNuevoPedido() {
+          this.nuevoPedido = {
+            id_cliente: '',
+            direccion_envio: '',
+            productos: [
+              {
+                id_producto: '',
+                cantidad: 1
+              }
+            ]
+          };
+        },
+        verDetallePedido(id) {
+          axios.get(`${this.apiUrl}/pedidos/${id}`)
+            .then(res => {
+              this.pedidoSeleccionado = res.data;
+            })
+            .catch(err => console.error(err));
+        },
+        cerrarDetallePedido() {
+          this.pedidoSeleccionado = null;
+        },
+        deletePedido(id) {
+          if (!confirm('¿Deseas eliminar este pedido?')) return;
+          axios.delete(`${this.apiUrl}/pedidos/${id}`)
+            .then(() => {
+              alert('Pedido eliminado');
+              this.fetchPedidos();
+            })
+            .catch(err => console.error(err));
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
