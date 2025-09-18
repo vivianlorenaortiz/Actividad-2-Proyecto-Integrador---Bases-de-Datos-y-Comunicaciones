@@ -1,9 +1,7 @@
-# Guia-4
- Solución Guía 4 - Desarrollo de Software - Universidad EAN
+Actividad 2 Guia 4 
 
-## 📦 TechLogistics - Sistema de Gestión Logística
-
-### 📋 Descripción
+TechLogistics - Sistema de Gestión Logística
+Descripción
 
 Sistema integral de gestión logística para la empresa TechLogistics S.A., que permite administrar clientes, productos, pedidos, transportistas y rutas de envío mediante una arquitectura de tres capas. Esta solución moderniza la infraestructura tecnológica, facilitando la gestión de pedidos y el rastreo de envíos en tiempo real.
 
