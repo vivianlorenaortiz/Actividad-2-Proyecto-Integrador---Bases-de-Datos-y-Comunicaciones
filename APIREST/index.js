@@ -393,6 +393,10 @@ app.get('/api/estados-envio', (req, res) => {
 // =========================================================
 // Servidor en marcha
 // =========================================================
+app.all('*', (req, res) => {
+  res.status(404).json({ message: 'Ruta no encontrada' });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor Express escuchando en http://localhost:${PORT}`);
 });
